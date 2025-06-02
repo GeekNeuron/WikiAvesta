@@ -1,6 +1,6 @@
 // YasnaArchive - main.js
 // Author: GeekNeuron (با همکاری هوش مصنوعی)
-// Version: 1.0.1 (شامل تمام ویژگی‌های بحث شده)
+// Version: 1.0.2 (اصلاح خطای Maximum call stack و بهبودهای دیگر)
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements ---
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggleButton = document.getElementById('theme-toggle');
     const hamburgerMenu = document.getElementById('hamburger-menu');
     const navLinksContainer = document.getElementById('nav-links');
-    const readingSettingsToggleButton = document.getElementById('reading-settings-toggle'); // <<<< تعریف این متغیر اینجاست
+    const readingSettingsToggleButton = document.getElementById('reading-settings-toggle'); // تعریف اینجاست
     const searchInput = document.getElementById('search-input');
     const searchButton = document.getElementById('search-button');
     const searchResultsContainer = document.getElementById('search-results');
@@ -124,14 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (starfieldContainer) {
             const isSepiaActive = body.classList.contains('reading-theme-sepia');
-            if (themeName === 'theme-dark' && !isSepiaActive) { // Starfield only if main dark and not sepia
+            if (themeName === 'theme-dark' && !isSepiaActive) {
                 starfieldContainer.style.opacity = '1';
                 if (starfieldContainer.children.length === 0) createStars(150);
             } else {
                 starfieldContainer.style.opacity = '0';
             }
         }
-        // playSound('themeSwitch'); // صدا هنگام تغییر تم اصلی
+        // playSound('themeSwitch'); // صدا هنگام تغییر تم اصلی - ممکن است با صدای دکمه تداخل کند
     }
 
     if (themeToggleButton) {
@@ -140,9 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
             applyMainTheme(newMainTheme);
             const activeReadingThemeBtn = document.querySelector('.theme-option-btn.active');
             if (activeReadingThemeBtn) {
-                 applyReadingTheme(activeReadingThemeBtn.dataset.readingTheme, true); // play sound on explicit theme change
+                 applyReadingTheme(activeReadingThemeBtn.dataset.readingTheme, true);
             } else {
-                 applyReadingTheme(defaultReadingSettings.readingTheme, true); // fallback if no reading theme was active
+                 applyReadingTheme(defaultReadingSettings.readingTheme, true);
             }
         });
     }
@@ -180,7 +180,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Show/Hide Main Content Areas & Scroll Position ---
     function showHomePage() {
-        deactivateImmersiveMode(); // Ensure immersive is off when going home
+        // ** اصلاح شده برای جلوگیری از حلقه بی‌نهایت **
+        // deactivateImmersiveMode در ابتدای loadInitialSettingsAndContent و loadSectionContent فراخوانی می‌شود
+        // و دیگر نیازی نیست اینجا مستقیماً فراخوانی شود اگر باعث حلقه می‌شود.
+        // اگر حالت غوطه‌ور فعال است، آن را غیرفعال کن.
+        if (body.classList.contains('immersive-active')) {
+            deactivateImmersiveMode();
+        }
+
         if (currentViewMode === 'constellation' && constellationNavContainer) {
             if (heroSection) heroSection.style.display = 'none';
             if (contentGrid) contentGrid.style.display = 'none';
@@ -198,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showDetailSection(sectionId) {
-        // Immersive mode is deactivated by loadSectionContent before calling this
+        // deactivateImmersiveMode is called by loadSectionContent before this
         if (heroSection) heroSection.style.display = 'none';
         if (contentGrid) contentGrid.style.display = 'none';
         if (constellationNavContainer) constellationNavContainer.style.display = 'none';
@@ -219,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showConstellationViewBtn.addEventListener('click', () => { currentViewMode = 'constellation'; localStorage.setItem('yasnaArchiveViewMode', 'constellation'); updateViewModeButtons(); showHomePage(); playSound('uiInteraction'); });
         updateViewModeButtons();
     }
+
 
     window.addEventListener('scroll', () => {
         clearTimeout(scrollDebounceTimer);
@@ -306,15 +314,14 @@ document.addEventListener('DOMContentLoaded', () => {
         deactivateImmersiveMode(); // Deactivate immersive if active from another section
         showDetailSection(sectionId); // Updates currentDetailSectionId and hides other main views
         
-        // Find section title from general data for loading message
         let sectionTitleForLoading = sectionId;
-        if (searchableData.length > 0) { // Use searchableData if populated
-            const sectionInfo = searchableData.find(s => s.id === sectionId && (s.type === 'tile' || s.type === 'page'));
-            if (sectionInfo) sectionTitleForLoading = sectionInfo.title;
-        } else { // Fallback to trying to get from nav links if general.json hasn't populated searchableData yet
-            const navLinkForSection = navLinksContainer.querySelector(`a[data-section="${sectionId}"]`);
-            if (navLinkForSection) sectionTitleForLoading = navLinkForSection.textContent;
+        // Attempt to get a more user-friendly title for the loading message
+        const generalSections = JSON.parse(localStorage.getItem('yasnaArchiveGeneralSections') || '[]'); // Assuming general.json data is stored
+        const sectionInfo = generalSections.find(s => s.id === sectionId);
+        if (sectionInfo) {
+            sectionTitleForLoading = sectionInfo.title;
         }
+
 
         detailContentArea.innerHTML = `<div class="loading-indicator" role="status" aria-live="polite"><div class="pulsating-orb"></div><p>در حال بارگذاری ${sectionTitleForLoading}...</p></div>`;
 
@@ -330,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (sectionId === 'history') renderHistory(data, dynamicContentDiv);
             else if (sectionId === 'prophet') renderProphet(data, dynamicContentDiv);
-            else if (sectionId === 'scripture') renderScripture(data, dynamicContentDiv, sectionId); // Pass sectionId for immersive button
+            else if (sectionId === 'scripture') renderScripture(data, dynamicContentDiv, sectionId);
             else if (sectionId === 'script-lang') renderScriptLanguage(data, dynamicContentDiv);
             else if (sectionId === 'genealogy') renderGenealogy(data, dynamicContentDiv);
             else dynamicContentDiv.innerHTML = `<p>تابع رندر برای بخش "${sectionId}" پیاده‌سازی نشده است.</p>`;
@@ -347,17 +354,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (firstHeading) { firstHeading.setAttribute('tabindex', '-1'); if (isNaN(savedScrollPos)) firstHeading.focus({ preventScroll: true }); }
             if (typeof observeNewAnimatedElements === 'function') observeNewAnimatedElements(dynamicContentDiv);
 
-            // Apply immersive mode if it was globally set in settings and this section supports it
-            if (localStorage.getItem('readingImmersiveMode') === 'true' && sectionId === 'scripture') { // Example: only for scripture
+            if (localStorage.getItem('readingImmersiveMode') === 'true' && (sectionId === 'scripture' || sectionId === 'history')) { // Example: auto-activate for specific sections
                 activateImmersiveModeGeneric();
             }
-
 
         } catch (error) { console.error(`Failed to load/render ${sectionId}.json:`, error); displayError(detailContentArea, `خطا در بارگذاری محتوای بخش "${sectionId}".`); }
     }
 
-    // --- Render Functions (Copied from previous full code, ensure they are complete) ---
-    function renderHistory(data, container) { /* ... (کد کامل از پاسخ قبلی) ... */
+    // --- Render Functions ---
+    function renderHistory(data, container) {
         let html = `<h2 class="anim-on-scroll" style="animation-delay: 0.1s;">${data.title || 'تاریخ'}</h2>`;
         if (data.introduction) html += `<p class="introduction anim-on-scroll" style="animation-delay: 0.2s;">${data.introduction}</p>`;
         if (data.periods && data.periods.length > 0) {
@@ -395,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
-    function renderProphet(data, container) { /* ... (کد کامل از پاسخ قبلی) ... */
+    function renderProphet(data, container) {
         let html = `<h2 class="anim-on-scroll">${data.pageTitle || 'پیامبر'}</h2>`;
         if (data.image) html += `<img src="${data.image}" alt="${data.fullName || 'زرتشت'}" class="anim-on-scroll featured-image" style="max-width: 250px; float: left; margin: 0 1.5rem 1rem 0; animation-delay:0.1s;">`;
         if(data.fullName) html += `<p class="anim-on-scroll" style="animation-delay:0.2s;"><strong>نام کامل:</strong> ${data.fullName}</p>`;
@@ -425,13 +430,12 @@ document.addEventListener('DOMContentLoaded', () => {
         html += '<div style="clear:both;"></div>';
         container.innerHTML = html;
     }
-    function renderScripture(data, container, sectionId) { /* ... (کد کامل از پاسخ قبلی) ... */
+    function renderScripture(data, container, sectionId) {
         let html = `<h2 class="anim-on-scroll">${data.pageTitle || 'اوستا - کتاب مقدس'}</h2>`;
-        // Note: The immersive mode button from settings panel is now global.
-        // If a specific button for *this* section is still desired, it can be added here,
-        // but the global toggle in settings panel should control the body class.
-        // For simplicity, we rely on the global settings panel toggle for immersive mode.
-        // html += `<button id="toggle-immersive-${sectionId}" class="immersive-mode-button interactive-pulse anim-on-scroll" style="animation-delay:0.1s;" aria-pressed="false"><span class="icon-immersive">🌌</span> حالت مطالعه غوطه‌ور</button>`;
+        // The global immersive mode toggle is in settings panel.
+        // A specific button for this section can still be added if desired, but it should sync with the global state.
+        // For now, we rely on the settings panel toggle.
+        // html += `<button id="toggle-immersive-${sectionId}" class="immersive-mode-button interactive-pulse anim-on-scroll" ...></button>`;
 
         if (data.introduction) html += `<p class="introduction anim-on-scroll" style="animation-delay:0.2s;">${data.introduction}</p>`;
         if (data.mainSections && data.mainSections.length > 0) {
@@ -559,7 +563,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json(); const sectionIdFromFile = fileName.replace('.json', '');
                 const addSearchableItem = (itemData) => { if (itemData.title && (itemData.text || itemData.summary)) { searchableData.push(itemData); } };
                 if (data.pageTitle || data.title) addSearchableItem({ id: sectionIdFromFile, title: data.pageTitle || data.title, text: (data.introduction || data.summary || '').replace(/<[^>]+>/g, ' '), type: 'page', section: sectionIdFromFile });
-                if (data.sections) data.sections.forEach(sec => addSearchableItem({ id: sec.id, title: sec.title, text: (sec.summary || '').replace(/<[^>]+>/g, ' '), type: 'tile', section: sec.id }));
+                if (data.sections) { // For general.json tiles
+                     data.sections.forEach(sec => addSearchableItem({ id: sec.id, title: sec.title, text: (sec.summary || '').replace(/<[^>]+>/g, ' '), type: 'tile', section: sec.id }));
+                     localStorage.setItem('yasnaArchiveGeneralSections', JSON.stringify(data.sections)); // Store for loading message
+                }
                 if (data.periods) data.periods.forEach(p => addSearchableItem({ id: p.id || sectionIdFromFile + '-' + (p.title||p.era_title||'event').replace(/\s+/g, '-').toLowerCase(), title: p.title || p.era_title, text: (p.summary || '') + (p.short_description || '') + (p.full_details || '').replace(/<[^>]+>/g, ' '), type: 'history_event', section: sectionIdFromFile }));
                 if (data.mainSections) data.mainSections.forEach(ms => { addSearchableItem({ id: 'scripture-' + ms.id, title: ms.title, text: (ms.summary || '') + (ms.content || '').replace(/<[^>]+>/g, ' '), type: 'scripture_section', section: 'scripture' }); if (ms.chapters) ms.chapters.forEach(ch => addSearchableItem({ id: 'scripture-' + ms.id + '-' + ch.chapterTitle.replace(/\s+/g, '-').toLowerCase(), title: ch.chapterTitle, text: (ch.verses || []).join(' '), type: 'scripture_chapter', section: 'scripture' })); });
                 if (data.teachings) data.teachings.forEach(t => addSearchableItem({id: sectionIdFromFile + '-teaching-' + t.title.replace(/\s+/g,'-').toLowerCase(), title: t.title, text: t.summary, type: 'detail_item', section: sectionIdFromFile}));
@@ -570,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         isSearchDataFetched = true;
     }
-    function performSearch() { /* ... (کد کامل از پاسخ قبلی، با دقت در dataset.itemId) ... */
+    function performSearch() { /* ... (کد کامل از پاسخ قبلی) ... */
         const query = searchInput.value.toLowerCase().trim();
         searchResultsList.innerHTML = ''; noResultsMessage.style.display = 'none';
         if (query.length < 2) { searchResultsContainer.style.display = 'none'; return; }
@@ -584,7 +591,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 a.addEventListener('click', (e) => {
                     e.preventDefault(); searchResultsContainer.style.display = 'none'; searchInput.value = '';
                     loadSectionContent(a.dataset.section);
-                    if (a.dataset.itemId && a.dataset.itemId !== a.dataset.section && !a.dataset.itemId.startsWith(a.dataset.section + '-page')) { // Avoid scrolling for main page/tile results
+                    if (a.dataset.itemId && a.dataset.itemId !== a.dataset.section && !a.dataset.itemId.startsWith(a.dataset.section + '-page')) {
                         setTimeout(() => {
                             const elementToScroll = document.getElementById(a.dataset.itemId) || detailContentArea.querySelector(`[data-event-id="${a.dataset.itemId}"]`);
                             if (elementToScroll) {
@@ -625,34 +632,41 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scrollToTopButton) { scrollToTopButton.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); if(siteTitleLogo) siteTitleLogo.focus(); playSound('uiInteraction'); }); }
 
     // --- Reading Settings Panel Logic ---
-    if (readingSettingsToggleButton && settingsPanel && closeSettingsButton && settingsOverlay) { /* ... (کد کامل از پاسخ قبلی) ... */
-        const openPanel = () => { settingsPanel.style.display = 'block'; settingsOverlay.style.display = 'block'; setTimeout(() => { settingsPanel.classList.add('visible'); settingsOverlay.classList.add('visible');}, 10); readingSettingsToggleButton.setAttribute('aria-expanded', 'true'); settingsPanel.querySelector('button, input, select, [tabindex="0"]')?.focus(); playSound('openPanel'); };
-        const closePanel = () => { settingsPanel.classList.remove('visible'); settingsOverlay.classList.remove('visible'); setTimeout(() => { settingsPanel.style.display = 'none'; settingsOverlay.style.display = 'none'; }, 300); readingSettingsToggleButton.setAttribute('aria-expanded', 'false'); readingSettingsToggleButton.focus(); playSound('closePanel'); };
-        readingSettingsToggleButton.addEventListener('click', openPanel);
+    // ** اصلاح شده: اطمینان از وجود تمام المان‌ها قبل از افزودن Event Listener **
+    if (readingSettingsToggleButton && settingsPanel && closeSettingsButton && settingsOverlay) {
+        const openPanel = () => {
+            settingsPanel.style.display = 'block'; settingsOverlay.style.display = 'block';
+            setTimeout(() => { settingsPanel.classList.add('visible'); settingsOverlay.classList.add('visible');}, 10);
+            readingSettingsToggleButton.setAttribute('aria-expanded', 'true');
+            settingsPanel.querySelector('button, input, select, [tabindex="0"]')?.focus();
+            playSound('openPanel');
+        };
+        const closePanel = () => {
+            settingsPanel.classList.remove('visible'); settingsOverlay.classList.remove('visible');
+            setTimeout(() => { settingsPanel.style.display = 'none'; settingsOverlay.style.display = 'none'; }, 300);
+            readingSettingsToggleButton.setAttribute('aria-expanded', 'false');
+            readingSettingsToggleButton.focus();
+            playSound('closePanel');
+        };
+        readingSettingsToggleButton.addEventListener('click', openPanel); // این خط دیگر نباید خطا بدهد
         closeSettingsButton.addEventListener('click', closePanel);
         settingsOverlay.addEventListener('click', closePanel);
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && settingsPanel.classList.contains('visible')) closePanel(); });
+    } else {
+        console.warn("One or more reading settings panel elements are missing. Panel functionality disabled.");
+        if (!readingSettingsToggleButton) console.error("CRITICAL: readingSettingsToggleButton not found in DOM!");
     }
+
     // Reading Settings Apply/Load functions
     function applyFontSize(multiplier) { root.style.setProperty('--reading-font-size-multiplier', multiplier); if (fontSizeValueDisplay) fontSizeValueDisplay.textContent = Math.round(multiplier * 100); localStorage.setItem('readingFontSize', multiplier); }
-    function applyReadingTheme(themeName, playSnd = true) {
+    function applyReadingTheme(themeName, playSnd = true) { /* ... (کد کامل از پاسخ قبلی) ... */
         body.classList.remove('reading-theme-light-override', 'reading-theme-sepia', 'reading-theme-dark-override');
-        body.classList.remove('theme-light', 'theme-dark'); // Remove main themes first
-
-        let mainThemeToSet = currentMainTheme; // Default to current main theme, will be overridden if reading theme implies a main theme
-
-        if (themeName === 'sepia-theme') {
-            body.classList.add('reading-theme-sepia');
-            mainThemeToSet = 'theme-light'; // Sepia is best on a light base for starfield logic
-        } else if (themeName === 'dark-theme') {
-            mainThemeToSet = 'theme-dark';
-            // body.classList.add('reading-theme-dark-override'); // No need for this if applyMainTheme is called
-        } else { // light-theme
-            mainThemeToSet = 'theme-light';
-            // body.classList.add('reading-theme-light-override');
-        }
-        applyMainTheme(mainThemeToSet); // This handles starfield and main body classes
-
+        body.classList.remove('theme-light', 'theme-dark');
+        let mainThemeToSet = currentMainTheme;
+        if (themeName === 'sepia-theme') { body.classList.add('reading-theme-sepia'); mainThemeToSet = 'theme-light'; }
+        else if (themeName === 'dark-theme') { mainThemeToSet = 'theme-dark'; }
+        else { mainThemeToSet = 'theme-light'; }
+        applyMainTheme(mainThemeToSet); // این تابع تم اصلی و ستاره‌ها را مدیریت می‌کند
         if (themeOptionButtons) themeOptionButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.readingTheme === themeName));
         localStorage.setItem('readingTheme', themeName);
         if(playSnd) playSound('uiInteraction');
@@ -688,8 +702,8 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleFullscreenButton.addEventListener('click', () => { if (!document.fullscreenElement) enterFullscreen(); else exitFullscreen(); playSound('uiInteraction'); });
         document.addEventListener('fullscreenchange', updateFullscreenButtonText); updateFullscreenButtonText();
     }
-    function enterFullscreen() { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); else if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen(); /* Add other prefixes if needed */ }
-    function exitFullscreen() { if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); /* Add other prefixes */ }
+    function enterFullscreen() { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); else if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen(); }
+    function exitFullscreen() { if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); }
 
     // Wake Lock
     if (keepScreenOnToggle) { /* ... (کد کامل از پاسخ قبلی) ... */
@@ -704,44 +718,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function releaseWakeLock() { if (wakeLock) { wakeLock.release(); wakeLock = null; if(wakeLockStatusDisplay){wakeLockStatusDisplay.textContent = 'روشن ماندن صفحه غیرفعال شد.'; wakeLockStatusDisplay.className = 'setting-note visible'; wakeLockStatusDisplay.style.display = 'block';}} }
 
-    // Immersive Mode (from settings panel)
+    // Immersive Mode (from settings panel and specific buttons)
     function activateImmersiveModeGeneric() {
         body.classList.add('immersive-active');
         if (toggleImmersiveModeSettingsButton) toggleImmersiveModeSettingsButton.checked = true;
-        // Update specific immersive buttons if they exist in the current view
-        const specificImmersiveBtn = detailContentArea.querySelector(`#toggle-immersive-${currentDetailSectionId}`);
+        const specificImmersiveBtn = detailContentArea?.querySelector(`#toggle-immersive-${currentDetailSectionId}`); // Use optional chaining
         if (specificImmersiveBtn) { specificImmersiveBtn.setAttribute('aria-pressed', 'true'); specificImmersiveBtn.innerHTML = '<span class="icon-immersive">📖</span> خروج از حالت مطالعه'; }
-        // Ensure only current detail section is visible
-        if (currentDetailSectionId && detailContentArea) {
-             const currentSectionEl = detailContentArea.querySelector(`#${currentDetailSectionId}-details`);
-             if (currentSectionEl) currentSectionEl.style.display = 'block';
-        }
+        if (currentDetailSectionId && detailContentArea) { const currentSectionEl = detailContentArea.querySelector(`#${currentDetailSectionId}-details`); if (currentSectionEl) currentSectionEl.style.display = 'block'; }
         playSound('uiInteraction');
     }
-    function deactivateImmersiveMode() {
+    function deactivateImmersiveMode() { // ** اصلاح شده برای جلوگیری از حلقه **
+        const wasImmersive = body.classList.contains('immersive-active');
         body.classList.remove('immersive-active');
         if (toggleImmersiveModeSettingsButton) toggleImmersiveModeSettingsButton.checked = false;
         document.querySelectorAll('.immersive-mode-button[id^="toggle-immersive-"]').forEach(btn => {
             btn.setAttribute('aria-pressed', 'false'); btn.innerHTML = '<span class="icon-immersive">🌌</span> حالت مطالعه غوطه‌ور';
         });
-        // Restore normal view if needed
-        if (currentDetailSectionId && detailContentArea) {
+        // اگر از حالت غوطه‌ور خارج می‌شویم و در یک بخش جزئیات هستیم، آن را نمایش بده
+        if (wasImmersive && currentDetailSectionId && detailContentArea) {
             const currentSectionEl = detailContentArea.querySelector(`#${currentDetailSectionId}-details`);
             if (currentSectionEl) currentSectionEl.style.display = 'block';
-        } else if (!currentDetailSectionId) { // on home page
-            showHomePage(); // This will restore tile/constellation view
         }
-        // playSound('uiInteraction'); // Sound might be redundant if called by other actions
+        // دیگر showHomePage() را از اینجا صدا نمی‌زنیم تا از حلقه جلوگیری شود.
+        // playSound('uiInteraction'); // این ممکن است با صدای دکمه‌ای که این تابع را صدا زده تداخل کند
     }
     if (toggleImmersiveModeSettingsButton) {
         toggleImmersiveModeSettingsButton.addEventListener('change', () => {
             const isPressed = toggleImmersiveModeSettingsButton.checked;
             if (isPressed) activateImmersiveModeGeneric(); else deactivateImmersiveMode();
             localStorage.setItem('readingImmersiveMode', isPressed);
-            playSound('uiInteraction');
+            // playSound('uiInteraction'); // صدا توسط activate/deactivate مدیریت می‌شود
         });
     }
-    // Event listener for specific immersive buttons within content (like scripture)
     if (detailContentArea) {
         detailContentArea.addEventListener('click', (event) => {
             const immersiveButton = event.target.closest('.immersive-mode-button[id^="toggle-immersive-"]');
@@ -749,11 +757,10 @@ document.addEventListener('DOMContentLoaded', () => {
                  const isCurrentlyImmersive = body.classList.contains('immersive-active');
                  if (isCurrentlyImmersive) deactivateImmersiveMode(); else activateImmersiveModeGeneric();
                  localStorage.setItem('readingImmersiveMode', !isCurrentlyImmersive);
-                 playSound('uiInteraction');
+                 // playSound('uiInteraction'); // صدا توسط activate/deactivate مدیریت می‌شود
             }
         });
     }
-
 
     // Reset All Reading Settings
     if (resetAllSettingsButton) { /* ... (کد کامل از پاسخ قبلی) ... */
@@ -771,7 +778,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyContentWidth(defaultReadingSettings.contentWidth); if (contentWidthSlider) { let sv = 2; if (defaultReadingSettings.contentWidth === 'narrow') sv = 1; else if (defaultReadingSettings.contentWidth === 'wide') sv = 3; contentWidthSlider.value = sv; }
                 if (keepScreenOnToggle) { keepScreenOnToggle.checked = defaultReadingSettings.keepScreenOn; releaseWakeLock(); if (wakeLockStatusDisplay) wakeLockStatusDisplay.style.display = 'none'; }
                 if (toggleImmersiveModeSettingsButton) toggleImmersiveModeSettingsButton.checked = defaultReadingSettings.immersiveMode;
-                deactivateImmersiveMode();
+                deactivateImmersiveMode(); // Ensure immersive is off
                 alert('تمام تنظیمات مطالعه به پیش‌فرض بازگردانده شدند.');
                 playSound('uiInteraction');
             }
@@ -780,28 +787,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initial Load & Hash Handling ---
     function loadInitialSettingsAndContent() {
-        applyMainTheme(currentMainTheme); // Apply main site theme first
-        loadReadingSettings(); // Apply all reading-specific settings
-        loadGeneralData();
-        fetchAllDataForSearch(); // Fetch in background
+        applyMainTheme(currentMainTheme); // ۱. اعمال تم اصلی سایت
+        loadReadingSettings();      // ۲. بارگذاری و اعمال تمام تنظیمات خواندن (شامل تم خواندن که ممکن است تم اصلی را override کند)
+        loadGeneralData();          // ۳. بارگذاری داده‌های عمومی (منوها، کاشی‌ها/ستاره‌ها)
+        fetchAllDataForSearch();    // ۴. شروع واکشی داده‌ها برای جستجو در پس‌زمینه
 
         const hash = window.location.hash.substring(1);
-        if (hash) { setTimeout(() => loadSectionContent(hash), 100); }
-        else { showHomePage(); }
+        if (hash) { setTimeout(() => loadSectionContent(hash), 100); } // ۵. بارگذاری بخش بر اساس هش URL
+        else { showHomePage(); } // یا نمایش صفحه اصلی
 
         window.addEventListener('scroll', simpleHeroParallax);
-        simpleHeroParallax();
+        simpleHeroParallax(); // فراخوانی اولیه برای پارالاکس
 
-        // Apply initial immersive mode if saved and toggle exists
+        // ۶. اعمال حالت غوطه‌ور اگر در localStorage ذخیره شده بود
         if (toggleImmersiveModeSettingsButton && localStorage.getItem('readingImmersiveMode') === 'true') {
-            activateImmersiveModeGeneric();
+            // فقط اگر در یک بخش جزئیات هستیم، حالت غوطه‌ور را فعال کن (نه در صفحه اصلی)
+            if (currentDetailSectionId) {
+                 activateImmersiveModeGeneric();
+            } else {
+                // اگر در صفحه اصلی هستیم و حالت غوطه‌ور ذخیره شده، آن را غیرفعال کن چون برای صفحه اصلی معنی ندارد
+                localStorage.setItem('readingImmersiveMode', 'false');
+                if (toggleImmersiveModeSettingsButton) toggleImmersiveModeSettingsButton.checked = false;
+            }
         }
     }
     window.addEventListener('hashchange', () => {
         const hash = window.location.hash.substring(1);
-        if (hash && hash !== currentDetailSectionId) loadSectionContent(hash);
-        else if (!hash && currentDetailSectionId) showHomePage();
-        else if (!hash && !currentDetailSectionId) showHomePage();
+        // اگر هش تغییر کرد و با بخش فعلی متفاوت بود، بخش جدید را بارگذاری کن
+        if (hash && hash !== currentDetailSectionId) {
+            loadSectionContent(hash);
+        }
+        // اگر هش خالی شد (کاربر به صفحه اصلی برگشت) و ما در یک بخش جزئیات بودیم، صفحه اصلی را نشان بده
+        else if (!hash && currentDetailSectionId) {
+            showHomePage();
+        }
+        // اگر هش خالی شد و ما از قبل در صفحه اصلی بودیم، اطمینان حاصل کن که نمای صحیح صفحه اصلی نشان داده می‌شود
+        else if (!hash && !currentDetailSectionId) {
+            showHomePage();
+        }
     });
 
     function loadReadingSettings() {
@@ -815,7 +838,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         applyTextAlign(localStorage.getItem('readingTextAlign') || defaultReadingSettings.textAlign);
         if(alignOptionButtons) alignOptionButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.textAlign === (localStorage.getItem('readingTextAlign') || defaultReadingSettings.textAlign)));
-
 
         applyFontFamily(localStorage.getItem('readingFontFamily') || defaultReadingSettings.fontFamily);
         if (fontFamilySelect) fontFamilySelect.value = localStorage.getItem('readingFontFamily') || defaultReadingSettings.fontFamily;
@@ -837,7 +859,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (toggleImmersiveModeSettingsButton) {
              const savedImmersive = localStorage.getItem('readingImmersiveMode') === 'true';
              toggleImmersiveModeSettingsButton.checked = savedImmersive;
-             // Actual application of immersive mode is handled in loadInitialSettingsAndContent
         }
     }
 
