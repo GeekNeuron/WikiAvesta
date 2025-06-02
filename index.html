@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دانشنامه آیین زرتشت</title>
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="description" content="دانشنامه جامع آیین زرتشت شامل تاریخ، پیامبر، کتاب، خط، تلفظ و شجره‌نامه.">
+    <meta name="keywords" content="زرتشت, اوستا, گاتاها, دین زرتشت, تاریخ زرتشت, YasnaArchive, GeekNeuron">
+    <meta name="author" content="GeekNeuron">
+    </head>
+<body class="theme-light"> <div id="starfield-background"></div> <header>
+        <nav>
+            <div class="logo">
+                <h1 id="site-title-logo" tabindex="0">دانشنامه آیین زرتشت</h1>
+            </div>
+            <div class="nav-main-links-wrapper"> <ul class="nav-links" id="nav-links">
+                    <li><a href="#home" data-section="home">خانه</a></li>
+                    </ul>
+            </div>
+            <div class="nav-controls">
+                <div class="search-container">
+                    <input type="search" id="search-input" placeholder="جستجو..." aria-label="فیلد جستجو">
+                    <button id="search-button" class="interactive-pulse" aria-label="شروع جستجو">🔍</button>
+                </div>
+                <button id="reading-settings-toggle" class="interactive-pulse" aria-label="باز کردن تنظیمات مطالعه" aria-expanded="false">⚙️</button>
+                <button id="theme-toggle" class="interactive-pulse" aria-label="تغییر تم">🌙</button>
+                <button class="hamburger-menu interactive-pulse" id="hamburger-menu" aria-label="باز کردن منو" aria-expanded="false">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+            </div>
+        </nav>
+        <div id="search-results" class="search-results-container" style="display:none;" role="region" aria-live="polite">
+            <h4>نتایج جستجو:</h4>
+            <ul id="search-results-list"></ul>
+            <p id="no-results-message" style="display:none;">موردی یافت نشد.</p>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero-section" class="hero-section parallax-container">
+            <div class="parallax-bg" style="background-image: url('assets/images/cosmic-hero-bg.jpg');"></div>
+            <div class="hero-content">
+                <h2 class="anim-on-scroll">به دانشنامه آیین زرتشت خوش آمدید</h2>
+                <p class="anim-on-scroll" style="animation-delay: 0.1s;">کاوشی در تاریخ، فرهنگ و آموزه‌های یکی از کهن‌ترین ادیان جهان.</p>
+            </div>
+        </section>
+
+        <div id="view-toggle-buttons" class="view-toggle-buttons" style="text-align: center; margin-bottom: 1.5rem; display:none;">
+            <button id="show-constellation-view-btn" class="secondary-action-button">نمایش ستاره‌ای</button>
+            <button id="show-tile-view-btn" class="secondary-action-button active">نمایش کاشی‌ها</button>
+        </div>
+
+
+        <section id="constellation-nav-container" class="constellation-nav-container" style="display:none;">
+            <h3 class="anim-on-scroll">کاوشی در آسمان دانش زرتشتی</h3>
+            <div class="constellation-map">
+                </div>
+        </section>
+
+        <section id="content-grid" class="grid-container">
+            </section>
+
+        <div id="detail-content-area" role="document">
+            </div>
+    </main>
+
+    <div id="reading-settings-panel" class="settings-panel" style="display: none;" role="dialog" aria-labelledby="settings-panel-title" aria-modal="true">
+        <div class="settings-panel-header">
+            <h3 id="settings-panel-title">تنظیمات مطالعه</h3>
+            <button id="close-settings-panel" aria-label="بستن تنظیمات مطالعه">&times;</button>
+        </div>
+        <div class="settings-panel-content">
+            <div class="setting-group">
+                <label for="font-size-slider">اندازه فونت: <span id="font-size-value">100</span>%</label>
+                <div class="font-size-controls">
+                    <button id="decrease-font" aria-label="کاهش اندازه فونت">-</button>
+                    <input type="range" id="font-size-slider" min="80" max="150" value="100" step="10">
+                    <button id="increase-font" aria-label="افزایش اندازه فونت">+</button>
+                    <button id="reset-font-size" class="small-btn">بازنشانی</button>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label>تم خواندن:</label>
+                <div class="theme-options">
+                    <button class="theme-option-btn" data-reading-theme="light-theme">روشن</button>
+                    <button class="theme-option-btn" data-reading-theme="sepia-theme">سپیا</button>
+                    <button class="theme-option-btn" data-reading-theme="dark-theme">تاریک</button>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label for="line-height-slider">فاصله خطوط: <span id="line-height-value">1.7</span></label>
+                 <div class="line-height-controls">
+                    <button id="decrease-line-height" aria-label="کاهش فاصله خطوط">-</button>
+                    <input type="range" id="line-height-slider" min="1.3" max="2.5" value="1.7" step="0.1">
+                    <button id="increase-line-height" aria-label="افزایش فاصله خطوط">+</button>
+                    <button id="reset-line-height" class="small-btn">بازنشانی</button>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label>چینش متن:</label>
+                <div class="alignment-options">
+                    <button class="align-option-btn" data-text-align="right" aria-label="راست چین">راست</button>
+                    <button class="align-option-btn" data-text-align="left" aria-label="چپ چین">چپ</button>
+                    <button class="align-option-btn" data-text-align="center" aria-label="وسط چین">وسط</button>
+                    <button class="align-option-btn" data-text-align="justify" aria-label="تراز از طرفین">تراز</button>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label for="font-family-select">خانواده فونت:</label>
+                <select id="font-family-select" class="font-family-select">
+                    <option value="var(--font-family-sans)">پیش‌فرض (روان)</option>
+                    <option value="var(--font-family-serif-alt, 'Times New Roman', Times, serif)">خوانا (سریف)</option>
+                    <option value="var(--font-family-monospace, 'Courier New', Courier, monospace)">تک‌فاصله</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label for="content-width-slider">عرض محتوا: <span id="content-width-value">متوسط</span></label>
+                <div class="content-width-controls">
+                    <input type="range" id="content-width-slider" min="1" max="3" value="2" step="1">
+                </div>
+            </div>
+            <div class="setting-group">
+                <label>نمایش:</label>
+                <button id="toggle-fullscreen-btn" class="full-width-btn interactive-pulse">ورود به حالت تمام صفحه</button>
+            </div>
+            <div class="setting-group">
+                <div class="setting-with-toggle">
+                    <label for="keep-screen-on-toggle">روشن نگه داشتن صفحه</label>
+                    <label class="switch">
+                        <input type="checkbox" id="keep-screen-on-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <p class="setting-note" id="wake-lock-status" style="display:none;"></p>
+            </div>
+             <div class="setting-group immersive-setting-group" style="border-top: 1px solid var(--tile-border-color-light); padding-top: 1rem;">
+                <div class="setting-with-toggle">
+                    <label for="toggle-immersive-mode-settings">حالت مطالعه غوطه‌ور</label>
+                     <label class="switch">
+                        <input type="checkbox" id="toggle-immersive-mode-settings" aria-pressed="false">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting-group reset-settings-group" style="margin-top: 2rem; border-top: 1px solid var(--tile-border-color-light); padding-top: 1rem;">
+                <button id="reset-all-reading-settings-btn" class="full-width-btn danger-btn interactive-pulse">بازنشانی تمام تنظیمات مطالعه</button>
+            </div>
+        </div>
+    </div>
+    <div id="settings-overlay" class="settings-overlay" style="display:none;"></div>
+
+    <button id="scrollToTopBtn" class="interactive-pulse" aria-label="بازگشت به بالا"><span>&uarr;</span></button>
+    <button id="toggle-sound-btn" aria-label="فعال/غیرفعال کردن صدا" class="sound-control interactive-pulse">🔊</button>
+
+
+    <footer>
+        <p>Made with ❤️ by <a href="https://github.com/GeekNeuron" target="_blank" rel="noopener noreferrer">GeekNeuron</a></p>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
