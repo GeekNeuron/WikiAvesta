@@ -8,15 +8,8 @@
     <meta name="description" content="دانشنامه جامع آیین زرتشت شامل تاریخ، پیامبر، کتاب، خط، تلفظ و شجره‌نامه.">
     <meta name="keywords" content="زرتشت, اوستا, گاتاها, دین زرتشت, تاریخ زرتشت, YasnaArchive, GeekNeuron">
     <meta name="author" content="GeekNeuron">
-    <!-- USER: در صورت نیاز، آیکون سایت (favicon) خود را اینجا اضافه کنید -->
-    <!-- <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon"> -->
-</head>
-<body class="theme-light"> <!-- کلاس اولیه تم توسط جاوااسکریپت بر اساس تنظیمات ذخیره شده کاربر تنظیم می‌شود -->
-
-    <!-- پس‌زمینه ستاره‌ای متحرک (فقط در تم تاریک فعال می‌شود) -->
-    <div id="starfield-background"></div>
-
-    <header role="banner">
+    </head>
+<body class="theme-light"> <header role="banner">
         <nav aria-label="ناوبری اصلی">
             <div class="logo">
                 <h1 id="site-title-logo" tabindex="0" title="بازگشت به صفحه اصلی">دانشنامه آیین زرتشت</h1>
@@ -24,16 +17,14 @@
             <div class="nav-main-links-wrapper">
                 <ul class="nav-links" id="nav-links">
                     <li><a href="#home" data-section="home">خانه</a></li>
-                    <!-- لینک‌های سایر بخش‌ها به صورت پویا از general.json اینجا اضافه خواهند شد -->
-                </ul>
+                    </ul>
             </div>
             <div class="nav-controls">
                 <div class="search-container" role="search">
-                    <input type="search" id="search-input" placeholder="جستجو..." aria-label="فیلد جستجو">
                     <button id="search-button" class="interactive-pulse" aria-label="شروع جستجو">🔍</button>
+                    <input type="search" id="search-input" placeholder="جستجو..." aria-label="فیلد جستجو">
                 </div>
                 <button id="reading-settings-toggle" class="interactive-pulse" aria-label="باز کردن تنظیمات مطالعه" aria-expanded="false" aria-controls="reading-settings-panel">⚙️</button>
-                <button id="theme-toggle" class="interactive-pulse" aria-label="تغییر تم">🌙</button>
                 <button class="hamburger-menu interactive-pulse" id="hamburger-menu" aria-label="باز کردن منو" aria-expanded="false" aria-controls="nav-links">
                     <span class="bar"></span>
                     <span class="bar"></span>
@@ -41,7 +32,6 @@
                 </button>
             </div>
         </nav>
-        <!-- نتایج جستجو -->
         <div id="search-results" class="search-results-container" style="display:none;" role="region" aria-live="polite">
             <h4>نتایج جستجو:</h4>
             <ul id="search-results-list"></ul>
@@ -50,49 +40,38 @@
     </header>
 
     <main id="main-content" role="main">
-        <!-- بخش هیرو با افکت پارالاکس -->
         <section id="hero-section" class="hero-section parallax-container" aria-labelledby="hero-heading">
-            <!-- USER: مسیر تصویر پس‌زمینه پارالاکس را بررسی و در صورت نیاز اصلاح کنید -->
-            <div class="parallax-bg" style="background-image: url('assets/images/cosmic-hero-bg.jpg');"></div>
+            <div class="parallax-bg"></div>
             <div class="hero-content">
                 <h2 id="hero-heading" class="anim-on-scroll">به دانشنامه آیین زرتشت خوش آمدید</h2>
                 <p class="anim-on-scroll" style="animation-delay: 0.1s;">کاوشی در تاریخ، فرهنگ و آموزه‌های یکی از کهن‌ترین ادیان جهان.</p>
             </div>
         </section>
 
-        <!-- دکمه‌های تغییر نما (کاشی یا صورت فلکی) -->
         <div id="view-toggle-buttons" class="view-toggle-buttons" style="text-align: center; margin-bottom: 1.5rem; display:none;" role="tablist" aria-label="انتخاب نمای صفحه اصلی">
             <button id="show-constellation-view-btn" class="secondary-action-button interactive-pulse" role="tab" aria-selected="false" aria-controls="constellation-nav-container">نمایش ستاره‌ای</button>
             <button id="show-tile-view-btn" class="secondary-action-button interactive-pulse active" role="tab" aria-selected="true" aria-controls="content-grid">نمایش کاشی‌ها</button>
         </div>
 
-        <!-- ناوبری صورت فلکی (اختیاری) -->
         <section id="constellation-nav-container" class="constellation-nav-container" style="display:none;" role="tabpanel" aria-labelledby="show-constellation-view-btn">
             <h3 class="anim-on-scroll">کاوشی در آسمان دانش زرتشتی</h3>
             <div class="constellation-map">
-                <!-- ستاره‌ها (بخش‌ها) با JS اینجا اضافه می‌شوند -->
-            </div>
+                </div>
         </section>
 
-        <!-- نمایش کاشی‌ها (پیش‌فرض) -->
         <section id="content-grid" class="grid-container" role="tabpanel" aria-labelledby="show-tile-view-btn">
-            <!-- کاشی‌ها در اینجا با جاوا اسکریپت از general.json بارگذاری می‌شوند -->
-        </section>
+            </section>
 
-        <!-- ناحیه نمایش محتوای جزئیات بخش‌ها -->
         <div id="detail-content-area" role="document" aria-live="polite">
-            <!-- محتوای بخش‌های مختلف اینجا بارگذاری می‌شود -->
-        </div>
+            </div>
     </main>
 
-    <!-- پنل تنظیمات مطالعه -->
     <div id="reading-settings-panel" class="settings-panel" style="display: none;" role="dialog" aria-labelledby="settings-panel-title" aria-modal="true">
         <div class="settings-panel-header">
             <h3 id="settings-panel-title">تنظیمات مطالعه</h3>
             <button id="close-settings-panel" class="interactive-pulse" aria-label="بستن تنظیمات مطالعه">&times;</button>
         </div>
         <div class="settings-panel-content">
-            <!-- اندازه فونت -->
             <div class="setting-group">
                 <label for="font-size-slider">اندازه فونت: <span id="font-size-value">100</span>%</label>
                 <div class="font-size-controls">
@@ -102,16 +81,16 @@
                     <button id="reset-font-size" class="small-btn interactive-pulse">بازنشانی</button>
                 </div>
             </div>
-            <!-- تم خواندن -->
             <div class="setting-group">
                 <label>تم خواندن:</label>
                 <div class="theme-options" role="radiogroup" aria-label="انتخاب تم خواندن">
                     <button class="theme-option-btn interactive-pulse" data-reading-theme="light-theme" role="radio" aria-checked="false">روشن</button>
                     <button class="theme-option-btn interactive-pulse" data-reading-theme="sepia-theme" role="radio" aria-checked="false">سپیا</button>
-                    <button class="theme-option-btn interactive-pulse" data-reading-theme="dark-theme" role="radio" aria-checked="false">تاریک</button>
+                    <button class="theme-option-btn interactive-pulse" data-reading-theme="dark-theme" role="radio" aria-checked="false">تاریک کیهانی</button>
+                    <button class="theme-option-btn interactive-pulse" data-reading-theme="midnight-blue-theme" role="radio" aria-checked="false">آبی نیمه‌شب</button>
+                    <button class="theme-option-btn interactive-pulse" data-reading-theme="forest-green-theme" role="radio" aria-checked="false">سبز جنگلی</button>
                 </div>
             </div>
-            <!-- فاصله خطوط -->
             <div class="setting-group">
                 <label for="line-height-slider">فاصله خطوط: <span id="line-height-value">1.7</span></label>
                  <div class="line-height-controls">
@@ -121,7 +100,6 @@
                     <button id="reset-line-height" class="small-btn interactive-pulse">بازنشانی</button>
                 </div>
             </div>
-            <!-- چینش متن -->
             <div class="setting-group">
                 <label>چینش متن:</label>
                 <div class="alignment-options" role="radiogroup" aria-label="انتخاب چینش متن">
@@ -131,7 +109,6 @@
                     <button class="align-option-btn interactive-pulse" data-text-align="justify" role="radio" aria-checked="false">تراز</button>
                 </div>
             </div>
-            <!-- خانواده فونت -->
             <div class="setting-group">
                 <label for="font-family-select">خانواده فونت:</label>
                 <select id="font-family-select" class="font-family-select">
@@ -140,19 +117,16 @@
                     <option value="var(--font-family-monospace, 'Courier New', Courier, monospace)">تک‌فاصله</option>
                 </select>
             </div>
-            <!-- عرض محتوا -->
             <div class="setting-group">
                 <label for="content-width-slider">عرض محتوا: <span id="content-width-value">متوسط</span></label>
                 <div class="content-width-controls">
                     <input type="range" id="content-width-slider" min="1" max="3" value="2" step="1" aria-describedby="content-width-value">
                 </div>
             </div>
-            <!-- نمایش -->
             <div class="setting-group">
                 <label>نمایش:</label>
                 <button id="toggle-fullscreen-btn" class="full-width-btn interactive-pulse">ورود به حالت تمام صفحه</button>
             </div>
-            <!-- روشن نگه داشتن صفحه -->
             <div class="setting-group">
                 <div class="setting-with-toggle">
                     <label for="keep-screen-on-toggle">روشن نگه داشتن صفحه</label>
@@ -163,9 +137,7 @@
                 </div>
                 <p class="setting-note" id="wake-lock-status" style="display:none;" aria-live="assertive"></p>
             </div>
-            <!-- حالت مطالعه غوطه‌ور (از پنل تنظیمات) -->
-             <div class="setting-group immersive-setting-group" style="border-top: 1px solid var(--settings-panel-border-light); padding-top: 1rem;">
-                 <!-- The CSS variable --settings-panel-border-light/dark will be used by JS to set the correct border -->
+            <div class="setting-group immersive-setting-group" style="border-top: 1px solid var(--settings-panel-border-light); padding-top: 1rem;">
                 <div class="setting-with-toggle">
                     <label for="toggle-immersive-mode-settings">حالت مطالعه غوطه‌ور</label>
                      <label class="switch">
@@ -174,7 +146,6 @@
                     </label>
                 </div>
             </div>
-            <!-- بازنشانی تنظیمات -->
             <div class="setting-group reset-settings-group" style="margin-top: 1.5rem; border-top: 1px solid var(--settings-panel-border-light); padding-top: 1rem;">
                 <button id="reset-all-reading-settings-btn" class="full-width-btn danger-btn interactive-pulse">بازنشانی تمام تنظیمات مطالعه</button>
             </div>
@@ -182,10 +153,7 @@
     </div>
     <div id="settings-overlay" class="settings-overlay" style="display:none;"></div>
 
-    <!-- دکمه‌های شناور -->
     <button id="scrollToTopBtn" class="interactive-pulse" aria-label="بازگشت به بالا" title="بازگشت به بالا"><span>&uarr;</span></button>
-    <button id="toggle-sound-btn" aria-label="فعال/غیرفعال کردن صدا" class="sound-control interactive-pulse" title="کنترل صدا">🔊</button>
-
     <footer role="contentinfo">
         <p>ساخته شده با ❤️ توسط <a href="https://github.com/GeekNeuron" target="_blank" rel="noopener noreferrer">GeekNeuron</a></p>
     </footer>
