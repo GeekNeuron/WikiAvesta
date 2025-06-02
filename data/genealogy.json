@@ -1,0 +1,10 @@
+{
+    "pageTitle": "شجره‌نامه و شخصیت‌های کلیدی",
+    "introduction": "نگاهی به شخصیت‌های مهم...",
+    "mainFigures": [
+        {"name": "زرتشت اسپنتمان", "role": "پیامبر", "parents": ["پوروشسب", "دوغدو"]}
+    ],
+    "lineages": [
+        {"ancestor": "منوچهر", "descendants": [{"name": "لهراسب", "children": ["گشتاسب"]}]}
+    ]
+}
