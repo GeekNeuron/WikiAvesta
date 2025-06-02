@@ -1,1 +1,10 @@
-
+{
+    "siteTitle": "دانشنامه آیین زرتشت",
+    "sections": [
+        {"id": "history", "title": "تاریخ", "summary": "مروری بر تاریخ کهن..."},
+        {"id": "prophet", "title": "پیامبر", "summary": "زندگی و آموزه‌های اشو زرتشت..."},
+        {"id": "scripture", "title": "اوستا", "summary": "بررسی متون مقدس..."},
+        {"id": "script-lang", "title": "خط و زبان", "summary": "خطوط و زبان‌های باستانی..."},
+        {"id": "genealogy", "title": "شجره‌نامه", "summary": "شخصیت‌ها و دودمان‌ها..."}
+    ]
+}
