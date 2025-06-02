@@ -1,0 +1,23 @@
+{
+    "pageTitle": "خط و زبان در آیین زرتشت",
+    "introduction": "زبان اوستایی و پهلوی زبان‌های اصلی متون دینی هستند...",
+    "languages": [
+        {"name": "زبان اوستایی", "description": "زبان کتاب اوستا...", "era": "هزاره دوم تا اول پ.م"}
+    ],
+    "scripts": [
+        {
+            "name": "خط اوستایی (دین دبیره)",
+            "description": "خطی آوانگار برای نگارش دقیق متون اوستایی.",
+            "imageExample": "assets/images/dindabireh_sample.png",
+            "sampleText": {
+                "lang": "ae", "chars": [
+                    {"char": "𐬀", "translit": "a", "pronun": "اَ"},
+                    {"char": "𐬵", "translit": "h", "pronun": "هـ"}
+                ]
+            }
+        }
+    ],
+    "pronunciationTips": [
+        {"term": "اهورامزدا", "phonetic": "/əˌhʊərə ˈmæzdə/", "audioFile": "assets/audio/ahuramazda.mp3"}
+    ]
+}
